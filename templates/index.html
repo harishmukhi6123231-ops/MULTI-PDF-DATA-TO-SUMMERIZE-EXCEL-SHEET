@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Choose PDF forms, define the fields you need, and export your data to Excel.">
+  <title>Flexible PDF Form Extractor</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</head>
+<body>
+<main class="app-shell">
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">FX</span><span>Form<span class="brand-light">Extract</span></span></a>
+    <span class="local-badge"><i></i> Local workspace</span>
+  </header>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">YOUR FIELDS · YOUR SPREADSHEET</p>
+      <h1>Get the data you need<br><span>from any PDF form.</span></h1>
+      <p>Upload PDF files or a whole folder. Review the documents, group similar forms, then tick the detected fields you want in Excel.</p>
+      <div class="hero-points"><span><b>01</b> Upload</span><span><b>02</b> Choose a form</span><span><b>03</b> Define fields</span></div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="visual-paper"><span class="paper-tag">PDF</span><div class="paper-line wide"></div><div class="paper-line"></div><div class="paper-line short"></div><div class="paper-box"></div><div class="paper-line wide"></div></div>
+      <div class="visual-arrow">→</div>
+      <div class="visual-sheet"><span class="sheet-tag">XLSX</span><div class="mini-grid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+    </div>
+  </section>
+
+  <section class="upload-card">
+    <div class="card-heading"><div><p class="eyebrow">STEP 01</p><h2>Upload PDFs or select a folder</h2></div><span class="step-count">01 <small>/ 03</small></span></div>
+    <p class="muted intro">Similar forms are grouped together automatically. Choose a group next, then review its PDF and add the fields you want.</p>
+    {% if error %}<div class="alert" role="alert">{{ error }}</div>{% endif %}
+    <form id="uploadForm" action="{{ url_for('classify') }}" method="post" enctype="multipart/form-data">
+      <div class="upload-options">
+        <label class="dropzone" id="dropzone" for="pdfFiles">
+          <span class="upload-icon">↑</span><strong>Choose PDF files</strong><span class="muted small">Select several PDFs at once</span>
+          <input id="pdfFiles" name="pdf_files" type="file" accept=".pdf,application/pdf" multiple>
+        </label>
+        <label class="dropzone folder-zone" for="folderFiles">
+          <span class="upload-icon folder-icon">▰</span><strong>Choose a folder</strong><span class="muted small">Find PDFs inside folders too</span>
+          <input id="folderFiles" name="pdf_files" type="file" accept=".pdf,application/pdf" webkitdirectory directory multiple>
+        </label>
+      </div>
+      <div class="file-list" id="fileList" aria-live="polite"></div>
+      <div class="upload-footer"><span class="privacy-note">PDFs stay in temporary local storage while you review and extract.</span><button id="submitButton" class="primary-button" type="submit" disabled>Group my forms <span>→</span></button></div>
+    </form>
+    <div class="capability-note"><strong>Works with different forms</strong><span>Detected PDF fields appear as checkboxes, so you choose what to include. Scanned PDFs without selectable text are identified for OCR.</span></div>
+  </section>
+
+  <section class="flow-grid">
+    <article><span class="flow-icon">▤</span><div><b>Preview before extracting</b><small>Open a sample PDF in the browser and review its layout.</small></div></article>
+    <article><span class="flow-icon">＋</span><div><b>Choose your fields</b><small>Set a field count, then name each Excel column and its source label.</small></div></article>
+    <article><span class="flow-icon">▦</span><div><b>Separate form types</b><small>Process one categorized form group into its own workbook.</small></div></article>
+  </section>
+  <footer><span>FormExtract <b>·</b> PDF to Excel</span><span>Local website · files are not sent to a cloud service</span></footer>
+</main>
+</body>
+</html>
+

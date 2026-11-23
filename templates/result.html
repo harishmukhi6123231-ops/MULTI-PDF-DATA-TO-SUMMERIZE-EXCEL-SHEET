@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Extraction complete · FormExtract</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<main class="app-shell wide-shell">
+  <header class="topbar"><a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">FX</span><span>Form<span class="brand-light">Extract</span></span></a><a class="back-link" href="{{ url_for('index') }}">← New upload</a></header>
+  <section class="results-hero"><p class="eyebrow">EXTRACTION COMPLETE</p><h1>Your workbook is <span>ready.</span></h1><p class="muted">{{ result.count }} document(s) · {{ result.category }} · {{ result.fields|length }} selected field(s){% if result.sort_by %} · sorted by {{ result.sort_by }}{% endif %}</p></section>
+  <section class="upload-card result-card">
+    <div class="card-heading"><div><p class="eyebrow">REVIEW YOUR DATA</p><h2>{{ result.filename }}</h2></div><span class="count-pill">{{ result.count }} rows</span></div>
+    <p class="muted intro">Check a sample of the extracted values before downloading.</p>
+    <div class="table-wrap"><table><thead><tr><th>Source PDF</th><th>Form Type</th>{% for field in result.fields %}<th>{{ field.column }}</th>{% endfor %}</tr></thead><tbody>
+      {% for row in result.rows %}<tr><td>{{ row['Source PDF'] }}</td><td>{{ row['Form Type'] }}</td>{% for field in result.fields %}<td>{{ row[field.column] or '—' }}</td>{% endfor %}</tr>{% endfor %}
+    </tbody></table></div>
+    <div class="result-actions"><a class="secondary-button" href="{{ url_for('index') }}">← Upload more PDFs</a><a class="primary-button" href="{{ url_for('download', result_id=result.id) }}">Download Excel workbook <span>↓</span></a></div>
+  </section>
+  <footer><span>FormExtract <b>·</b> Custom fields to Excel</span><span>Review extracted values before relying on them</span></footer>
+</main>
+</body>
+</html>
+

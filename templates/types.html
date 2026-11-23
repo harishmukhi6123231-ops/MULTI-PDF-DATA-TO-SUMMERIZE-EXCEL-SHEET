@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Choose a form type · FormExtract</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<main class="app-shell">
+  <header class="topbar"><a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">FX</span><span>Form<span class="brand-light">Extract</span></span></a><a class="back-link" href="{{ url_for('index') }}">← Upload different files</a></header>
+  <section class="page-intro"><p class="eyebrow">STEP 02 · FORM CATEGORIES</p><h1>Which form type<br><span>do you want to extract?</span></h1><p class="muted">We grouped PDFs by the text and labels on their first page. Choose one group to define its fields.</p></section>
+  {% if skipped %}<div class="alert soft-alert"><b>{{ skipped|length }} file(s) skipped</b>{% for item in skipped %}<span>{{ item.name }} — {{ item.reason }}</span>{% endfor %}</div>{% endif %}
+  <section class="type-grid">
+    {% for category in categories %}
+    <article class="type-card">
+      <div class="type-card-top"><div class="type-icon">▤</div><span class="count-pill">{{ category.count }} PDF{% if category.count != 1 %}s{% endif %}</span></div>
+      <p class="eyebrow">CATEGORY {{ loop.index }}</p><h2>{{ category.name }}</h2>
+      <p class="type-description">{% if category.unreadable %}These PDFs have no selectable text. They may be scanned and require OCR.{% else %}Similar document layouts were grouped together for field setup.{% endif %}</p>
+      {% if category.labels %}<div class="label-chips">{% for label in category.labels[:5] %}<span>{{ label }}</span>{% endfor %}</div>{% endif %}
+      <div class="sample-files"><b>Files in this group</b>{% for doc in category.documents[:4] %}<span title="{{ doc.name }}">▧ {{ doc.name }}</span>{% endfor %}{% if category.count > 4 %}<small>and {{ category.count - 4 }} more</small>{% endif %}</div>
+      <a class="primary-button full-button" href="{{ url_for('configure', batch_id=batch_id, category_id=category.id) }}">Review this type <span>→</span></a>
+    </article>
+    {% endfor %}
+  </section>
+  <footer><span>FormExtract <b>·</b> Choose one type to continue</span><span>Form grouping is an automatic suggestion</span></footer>
+</main>
+</body>
+</html>

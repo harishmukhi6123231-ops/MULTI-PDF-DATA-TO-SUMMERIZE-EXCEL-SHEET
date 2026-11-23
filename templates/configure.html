@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Review fields · FormExtract</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</head>
+<body>
+<main class="app-shell wide-shell">
+  <header class="topbar"><a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">FX</span><span>Form<span class="brand-light">Extract</span></span></a><a class="back-link" href="{{ url_for('index') }}">← Start over</a></header>
+  <section class="configure-heading"><div><p class="eyebrow">STEP 03 · {{ category.count }} PDF{% if category.count != 1 %}S{% endif %} IN THIS GROUP</p><h1>Review <span>{{ category.name }}</span></h1><p class="muted">The fields below were detected from this form. Tick the columns you want in Excel.</p></div><span class="step-count">03 <small>/ 03</small></span></section>
+  {% if error %}<div class="alert" role="alert">{{ error }}</div>{% endif %}
+  <section class="builder-layout">
+    <div class="preview-panel">
+      <div class="panel-heading"><div><span class="panel-number">A</span><div><b>PDF preview</b><small>Review any file in this group</small></div></div><span class="preview-badge">PREVIEW</span></div>
+      <select id="previewSelect" class="preview-select" aria-label="Choose a PDF to preview">
+        {% for doc in category.documents %}<option value="{{ url_for('preview_pdf', batch_id=batch_id, document_id=doc.id) }}" {% if doc.id == selected.id %}selected{% endif %}>{{ doc.name }}</option>{% endfor %}
+      </select>
+      <div class="pdf-frame-wrap"><iframe id="pdfFrame" title="Selected PDF preview" src="{{ url_for('preview_pdf', batch_id=batch_id, document_id=selected.id) }}"></iframe></div>
+      {% if selected.read_error %}<p class="preview-warning">{{ selected.read_error }}</p>{% endif %}
+    </div>
+
+    <div class="field-panel">
+      <div class="panel-heading"><div><span class="panel-number purple">B</span><div><b>Detected fields</b><small>{{ category.fields|length }} labels found in this form group</small></div></div><span class="step-count compact">TICK TO SELECT</span></div>
+      {% if category.sort_key %}<div class="sort-note"><span>↕</span><div><b>{{ category.fields|selectattr('sort_key')|map(attribute='column')|first }}</b><small>Detected as the pass / document number. Included automatically and used to sort Excel rows.</small></div></div>{% endif %}
+      {% if category.fields %}
+      <form id="fieldForm" action="{{ url_for('extract_fields', batch_id=batch_id, category_id=category.id) }}" method="post">
+        <div class="field-toolbar"><span><b id="selectedCount">0</b> selected</span><div><button type="button" data-select-all>Select all</button><button type="button" data-clear-all>Clear</button></div></div>
+        <div class="detected-fields">
+          {% for field in category.fields %}
+          <label class="detected-field {% if field.sort_key %}is-sort-key{% endif %}">
+            <input type="checkbox" name="fields" value="{{ field.id }}" data-field-check {% if field.sort_key %}checked{% endif %} {% if field.sort_key %}disabled{% endif %}>
+            <span class="checkmark"></span>
+            <span class="detected-field-copy"><b>{{ field.column }}</b><small>Found in {{ field.found_in }} of {{ category.count }} PDF{% if category.count != 1 %}s{% endif %}</small></span>
+            {% if field.sort_key %}<span class="key-badge">KEY · SORT</span>{% endif %}
+          </label>
+          {% endfor %}
+        </div>
+        <p class="hint-text">Values are read beside their detected labels. You can check the PDF preview to confirm what each label means.</p>
+        <div class="extract-footer"><span class="privacy-note">Source PDF and form type are included automatically.</span><button class="primary-button full-button" type="submit">Extract checked fields <span>↓</span></button></div>
+      </form>
+      {% else %}
+      <div class="empty-fields"><strong>No form labels were detected.</strong><span>This PDF may be scanned or use an unusual layout. A searchable text PDF is needed for automatic field detection.</span></div>
+      {% endif %}
+    </div>
+  </section>
+  <footer><span>FormExtract <b>·</b> Review and choose fields</span><span>Detected values can be reviewed before download</span></footer>
+</main>
+</body>
+</html>
